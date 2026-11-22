@@ -8,6 +8,21 @@
 - 内容块目录
 - 还原查验
 - 留存清单
+- 占用账单
+
+## 占用账单口径
+
+验收记录按验收时的归属月份和制作组入账。每个内容块按实测字节计一次，在所有引用它的制作组间平分，余数按组名排序分配；同一组重复引用只算一次。账期关账时发布原始账单，关账后收到的迟到记录或撤销自动追加差额账单。账单发布后不再改写，原账单及其依据可随时通过接口回查。
+
+入账只写记录表，不持有账期行锁，因此关账期间仍可继续收单。结算以账期行锁串行化，并以记录快照摘要做幂等：重试关账或补差不会重复出账。某月全部原始账单与差额账单逐组、逐块相加，等于修正后的实占字节。
+
+接口：
+
+- `POST /billing/records` 登记验收记录（含 `blocks` 或 `run_id`），`record_key` 唯一
+- `POST /billing/records/{id}/reverse` 撤销记录并补差
+- `POST /billing/periods/{month}/close` 关账并发布原始账单
+- `POST /billing/periods/{month}/settle` 对账并补出差额账单
+- `GET /billing/overview`、`/billing/records`、`/billing/periods`、`/billing/settlements`、`/billing/bills`、`/billing/summary?month=YYYY-MM` 回查
 
 ## 本地运行
 

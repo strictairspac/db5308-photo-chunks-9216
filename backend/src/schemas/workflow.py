@@ -15,3 +15,21 @@ class CaseForm(BaseModel):
 
 class ReviewForm(BaseModel):
     note: str = Field(min_length=1, max_length=500)
+
+
+class BlockForm(BaseModel):
+    address: str
+    bytes: int
+
+
+class BillingRecordForm(BaseModel):
+    month: str
+    production_group: str
+    record_key: str
+    blocks: list[BlockForm] | None = None
+    run_id: int | None = None
+    note: str | None = None
+
+
+class ReverseForm(BaseModel):
+    note: str
